@@ -130,3 +130,5 @@ dmypy.json
 
 tags
 *.sw[po]
+config.yml
+config.yaml

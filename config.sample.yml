@@ -1,0 +1,5 @@
+history_tag: My App
+sesame:
+  api_key: <Your API Key>
+  secret_key: <Your Secret Key>
+  uuid: <Your Device UUID>
