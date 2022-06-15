@@ -23,3 +23,5 @@ typings
 poetry.lock
 pyproject.toml
 .vscode
+.flake8
+.python-version
