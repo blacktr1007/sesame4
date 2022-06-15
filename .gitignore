@@ -132,6 +132,3 @@ tags
 *.sw[po]
 config.yml
 config.yaml
-
-# This is unnecessary in poetry env.
-requirements.txt
