@@ -1,0 +1,12 @@
+{
+	"python.languageServer": "Pylance",
+	"python.linting.pylintEnabled": false,
+	"python.linting.flake8Enabled": true,
+	"python.formatting.provider": "black",
+	"[python]": {
+	  "editor.formatOnSave": true
+	},
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true
+	}
+}
