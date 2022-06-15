@@ -8,7 +8,7 @@ from open_sesame.core import OpenSesame
 
 
 def create_oepn_sesame() -> OpenSesame:
-    config_file = "config.yml"
+    config_file = "/etc/secrets/config.yml"
     with open(config_file, "r") as config_fp:
         config = from_dict(data_class=ConfigSchema, data=yaml.safe_load(config_fp))
 
