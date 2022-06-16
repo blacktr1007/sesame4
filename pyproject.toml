@@ -10,6 +10,7 @@ pysesame3 = "^0.6.0"
 PyYAML = "^6.0"
 dacite = "^1.6.0"
 awscrt = "^0.13.13"
+Flask = "^2.1.2"
 
 [tool.poetry.dev-dependencies]
 black = ">=22.3.0"
