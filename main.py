@@ -23,8 +23,7 @@ def main(request: Request):
     sesame: OpenSesame = OpenSesame(device=device, history_tag=config.history_tag)
 
     action: str = request.args.get("action", "")
-
-    if action == "lock":
-        sesame.lock()
-    elif action == "unlock":
-        sesame.unlock()
+    if action == "unlock":
+        return sesame.unlock()
+    else:
+        return sesame.lock()
