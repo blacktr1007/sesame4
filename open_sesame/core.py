@@ -11,7 +11,7 @@ from pytz.tzinfo import DstTzInfo, StaticTzInfo
 class OpenSesame:
     device: CHSesame2
     history_tag: str
-    location: StaticTzInfo | DstTzInfo | pytz._UTCclass = field(init=False)  # pyright: ignore ReportPrivateUsage
+    location: StaticTzInfo | DstTzInfo | pytz.UTC.__class__ = field(init=False)
 
     def __post_init__(self):
         self.location = pytz.timezone("Asia/Tokyo")
