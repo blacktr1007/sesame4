@@ -1,23 +1,18 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
-import pytz
 from pysesame3.chsesame2 import CHSesame2
 from pysesame3.const import CHSesame2ShadowStatus
-from pytz.tzinfo import DstTzInfo, StaticTzInfo
 
 
 @dataclass
 class OpenSesame:
     device: CHSesame2
     history_tag: str
-    location: StaticTzInfo | DstTzInfo | pytz.UTC.__class__ = field(init=False)
-
-    def __post_init__(self):
-        self.location = pytz.timezone("Asia/Tokyo")
 
     def _current_date(self) -> str:
-        return self.location.localize(datetime.now()).strftime("%Y/%m/%d %H:%M:%S")
+        return datetime.now(tz=ZoneInfo("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")
 
     def lock(self) -> str:
         if self.device.getDeviceShadowStatus() == CHSesame2ShadowStatus.LockedWm:
