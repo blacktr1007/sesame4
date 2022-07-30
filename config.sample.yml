@@ -3,3 +3,5 @@ sesame:
   api_key: <Your API Key>
   secret_key: <Your Secret Key>
   uuid: <Your Device UUID>
+slack:
+  signing_secret: <Your Slack Signing Secret>
