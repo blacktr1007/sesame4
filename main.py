@@ -1,8 +1,12 @@
-from typing import cast
+import json
+from base64 import b64decode
+from typing import Any, cast
 
 import yaml
 from dacite.core import from_dict
 from flask.wrappers import Request
+from google.cloud.pubsub_v1 import PublisherClient
+from google.cloud.pubsub_v1.futures import Future
 from pysesame3.auth import WebAPIAuth
 from pysesame3.chsesame2 import CHSesame2
 from slack_sdk.signature import SignatureVerifier
@@ -20,15 +24,10 @@ def verify_slack_signature(request: Request, signing_secret: str):
         raise ValueError("Invalid request/credentials.")
 
 
-def main(request: Request):
+def subscribe(event: dict[str, Any], context: Any):
     config_file = "/etc/secrets/config.yml"
     with open(config_file, "r") as config_fp:
         config = from_dict(data_class=ConfigSchema, data=yaml.safe_load(config_fp))
-
-    try:
-        verify_slack_signature(request=request, signing_secret=config.slack.signing_secret)
-    except ValueError as e:
-        return str(e)
 
     auth = WebAPIAuth(apikey=config.sesame.api_key)
     device = CHSesame2(
@@ -39,14 +38,38 @@ def main(request: Request):
 
     sesame: OpenSesame = OpenSesame(device=device, history_tag=config.history_tag)
 
-    if request.method == "POST":
-        action: str = request.args.get("action", "")
-    elif request.method == "GET":
-        action: str = cast(dict[str, str], request.get_json())["client_id"] if request.is_json else ""
-    else:
-        return False
-
+    action: str = json.loads(b64decode(event["data"]).decode())["action"]
     if action in ["unlock", "sesame_unlock"]:
-        return sesame.unlock()
+        sesame.unlock()
     else:
-        return sesame.lock()
+        sesame.lock()
+
+
+def publish(request: Request):
+    if request.method != "POST":
+        return "Only POST requests are accepted", 405
+
+    config_file = "/etc/secrets/config.yml"
+    with open(config_file, "r") as config_fp:
+        config = from_dict(data_class=ConfigSchema, data=yaml.safe_load(config_fp))
+
+    try:
+        verify_slack_signature(request=request, signing_secret=config.slack.signing_secret)
+    except ValueError as e:
+        return str(e)
+
+    publisher = PublisherClient()
+    action: str
+    if not (action := request.args.get("action", "")):
+        action = cast(dict[str, str], request.get_json())["client_id"] if request.is_json else ""
+    message = json.dumps({"action": action})
+
+    try:
+        publish_future: Future = publisher.publish(
+            publisher.topic_path(config.gcp.project_id, config.gcp.topic),
+            data=message.encode("utf-8"),
+        )
+        publish_future.result()
+        return f"{action}: Accepted."
+    except Exception as e:
+        return f"{action}: {e}"

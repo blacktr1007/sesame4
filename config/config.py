@@ -19,7 +19,14 @@ class SlackConfigSchema:
 
 
 @dataclass(frozen=True)
+class GCPConfigSchema:
+    project_id: str
+    topic: str
+
+
+@dataclass(frozen=True)
 class ConfigSchema:
     history_tag: str
     sesame: SesameConfigSchema
     slack: SlackConfigSchema
+    gcp: GCPConfigSchema

@@ -5,3 +5,6 @@ sesame:
   uuid: <Your Device UUID>
 slack:
   signing_secret: <Your Slack Signing Secret>
+gcp:
+  project_id: <Your project ID>
+  topic: <Your topic>
